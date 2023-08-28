@@ -1,7 +1,7 @@
 <template>
     <div>
         <h1>Todo List</h1>
-    <div class="add-tasgk">
+    <div class="add-task">
       <label for="newTaskDescription">Description:</label>
       <input
         id="newTaskDescription"
