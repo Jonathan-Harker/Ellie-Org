@@ -1,7 +1,7 @@
 <template>
     <div>
-        <h1>Todo List</h1>
-    <div class="add-task">
+        <h1>The Ellie Org</h1>
+        <div class="add-task">
       <label for="newTaskDescription">Description:</label>
       <input
         id="newTaskDescription"
@@ -29,16 +29,48 @@
       />
       <button @click="addTask">Add Task</button>
     </div>
-      <ul class="task-list">
-      <todo-item
-        v-for="(task, index) in tasks"
-        :key="index"
-        :task="task"
-        @remove="removeTask(index)"
-        @updateImportance="updateImportance(index, $event)"
-        @updateUrgency="updateUrgency(index, $event)"
-      />
+    
+    <div class="tab-container">
+      <div class="tab" :class="{ active: activeTab === 'tasks' }" @click="handleTabClick('tasks')">Tasks</div>
+      <div class="tab" :class="{ active: activeTab === 'completed' }" @click="handleTabClick('completed')">Completed</div>
+    </div>
+
+    <div v-if="activeTab === 'tasks'">
+    <ul class="task-list">
+      <li v-for="(task, index) in filteredTasks" :key="index">
+    <div class="task-item">
+      <input type="checkbox" v-model="task.completed" @change="markTaskCompleted(index)" />
+      <span :class="{ completed: task.completed }">{{ task.description }}</span>
+      <div class="task-actions">
+        <input type="number" v-model="task.importance" min="1" max="5" @input="updateImportance(index, task.importance)" />
+        <input type="number" v-model="task.urgency" min="1" max="5" @input="updateUrgency(index, task.urgency)" />
+        <button @click="removeTask(index)">Remove</button>
+      </div>
+    </div>
+  </li>
+</ul>
+</div>
+<div v-else-if="activeTab === 'completed'">
+<ul class="task-list">
+  <li v-for="(tasksInWeek, weekKey) in completedTasksByWeek" :key="weekKey">
+    <h3>{{ weekKey }}</h3>
+    <ul>
+      <li v-for="(task, index) in tasksInWeek" :key="index" class="completed-task">
+        <div class="task-item">
+          <input type="checkbox" v-model="task.completed" />
+          <span :class="{ completed: task.completed }">{{ task.description }}</span>
+          <div class="task-actions">
+            <input type="number" v-model="task.importance" min="1" max="5" @input="updateImportance(index, task.importance)" />
+            <input type="number" v-model="task.urgency" min="1" max="5" @input="updateUrgency(index, task.urgency)" />
+            <button @click="removeTask(index)">Remove</button>
+          </div>
+        </div>
+      </li>
     </ul>
+  </li>
+</ul>
+</div>
+
       <h2>Eisenhower Matrix</h2>
       <div class="matrix-quadrant" v-for="(quadrant, index) in sortedQuadrants" :key="index">
         <h3>{{ quadrant.title }}</h3>
@@ -128,26 +160,89 @@
   .task-list li button:hover {
     background-color: #e07642;
   }
+
+  .tab-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.tab {
+  padding: 10px 20px;
+  background-color: #eee;
+  border: 1px solid #ccc;
+  border-radius: 5px 5px 0 0;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.tab.active {
+  background-color: #f39458;
+  color: white;
+  border-bottom: none;
+}
+
+.completed-task {
+  margin-left: 20px;
+  list-style: disc;
+}
+
   </style>
   <script>
-  import TodoItem from "./TodoItem.vue";
-  
   export default {
-    components: {
-      TodoItem,
-    },
     data() {
       return {
+        activeTab: 'tasks',
         newTaskDescription: "",
         newTaskImportance: 1,
         newTaskUrgency: 1,
-        tasks: [],
+        tasks: [
+        {
+        description: "Task 1",
+        completed: false,
+        timestamp: null,
+      },
+        ],
       };
     },
     created() {
       this.loadTasks();
     },
     computed: {
+      completedTasksByWeek() {
+    const completedTasks = this.tasks.filter(task => task.completed);
+    completedTasks.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+    const tasksByWeek = {};
+    completedTasks.forEach(task => {
+      const weekKey = new Date(task.timestamp).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+      if (!tasksByWeek[weekKey]) {
+        tasksByWeek[weekKey] = [];
+      }
+      tasksByWeek[weekKey].push(task);
+    });
+
+    return tasksByWeek;
+  },
+      filteredTasks() {
+    if (this.activeTab === 'completed') {
+      const completedTasks = this.tasks.filter(task => task.completed);
+      completedTasks.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+      const tasksByWeek = {};
+      completedTasks.forEach(task => {
+        const weekKey = new Date(task.timestamp).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+        if (!tasksByWeek[weekKey]) {
+          tasksByWeek[weekKey] = [];
+        }
+        tasksByWeek[weekKey].push(task);
+      });
+
+      return tasksByWeek;
+    } else {
+      return this.tasks.filter(task => !task.completed);
+    }
+  },
       quadrants() {
         return [
       {
@@ -175,7 +270,17 @@
         });
       },
     },
-    methods: {
+    methods: 
+    {
+      markTaskCompleted(index) {
+    this.tasks[index].completed = true;
+    this.tasks[index].timestamp = new Date().toISOString(); // or any suitable timestamp format
+    this.saveTasks();
+  },
+      handleTabClick(tab) {
+    console.log('Tab clicked:', tab);
+    this.activeTab = tab;
+  },
       addTask() {
         if (this.newTaskDescription.trim() !== "") {
           this.tasks.push({
@@ -201,9 +306,9 @@
           this.tasks = JSON.parse(storedTasks);
         }
       },
-      updateTask(index, editedTask) {
-      this.tasks[index] = editedTask;
-      this.saveTasks();
+      updateTask(index) {
+        this.tasks[index].completed = !this.tasks[index].completed;
+    this.saveTasks();
     },
       saveTasks() {
         localStorage.setItem("tasks", JSON.stringify(this.tasks));
