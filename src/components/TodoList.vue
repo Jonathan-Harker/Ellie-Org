@@ -62,6 +62,7 @@
 <ul class="task-list">
   <li v-for="(tasksInWeek, weekKey) in completedTasksByWeek" :key="weekKey">
     <h3>{{ weekKey }}</h3>
+    <p>Total Effort: {{ completedTasksEffortTotal[weekKey] }}</p>
     <ul>
       <li v-for="(task, index) in tasksInWeek" :key="index" class="completed-task">
         <div class="task-item">
@@ -93,113 +94,10 @@
       </div>
     </div>
   </template>
-  <style scoped>
-  .todo-app {
-    font-family: 'Arial', sans-serif;
-    padding: 20px;
-    background-color: #f7f5f2;
-    color: #333;
-  }
-  
-  .add-task {
-    margin-bottom: 20px;
-  }
-  
-  .add-task label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-  }
-  
-  .add-task input[type="text"],
-  .add-task input[type="number"],
-  .add-task button {
-    padding: 8px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    margin-right: 10px;
-  }
-  
-  .add-task button {
-    background-color: #f39458;
-    color: white;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.2s;
-  }
-  
-  .add-task button:hover {
-    background-color: #e07642;
-  }
-  
-  .task-list {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  .task-list li {
-    background-color: white;
-    padding: 10px;
-    border-radius: 5px;
-    margin: 10px 0;
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  
-  .task-list li input[type="checkbox"] {
-    margin-right: 10px;
-  }
-  
-  .task-list li input[type="number"] {
-    width: 40px;
-  }
-  
-  .task-list li button {
-    background-color: #f39458;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-  }
-  
-  .task-list li button:hover {
-    background-color: #e07642;
-  }
+ 
+ <style src="./TodoList.css"></style>
 
-  .tab-container {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
-}
-
-.tab {
-  padding: 10px 20px;
-  background-color: #eee;
-  border: 1px solid #ccc;
-  border-radius: 5px 5px 0 0;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.tab.active {
-  background-color: #f39458;
-  color: white;
-  border-bottom: none;
-}
-
-.completed-task {
-  margin-left: 20px;
-  list-style: disc;
-}
-
-  </style>
-  <script>
+<script>
   export default {
     data() {
       return {
@@ -222,6 +120,15 @@
       this.loadTasks();
     },
     computed: {
+      completedTasksEffortTotal() {
+    const totalByWeek = {};
+    for (const weekKey in this.completedTasksByWeek) {
+      const tasksInWeek = this.completedTasksByWeek[weekKey];
+      const totalEffort = tasksInWeek.reduce((total, task) => total + task.effort, 0);
+      totalByWeek[weekKey] = totalEffort;
+    }
+    return totalByWeek;
+  },
       completedTasksByWeek() {
     const completedTasks = this.tasks.filter(task => task.completed);
     completedTasks.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
@@ -349,12 +256,4 @@
     },
   };
   </script>
-  
-  <style>
-  .matrix-quadrant {
-    margin-top: 20px;
-    border: 1px solid #ccc;
-    padding: 10px;
-  }
-  </style>
   
