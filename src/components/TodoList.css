@@ -102,8 +102,21 @@
   list-style: disc;
 }
 
-.matrix-quadrant {
-    margin-top: 20px;
+.matrix-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  
+  .matrix-quadrant {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
     border: 1px solid #ccc;
     padding: 10px;
+    box-sizing: border-box;
+    background-color: #ebcde7;
+    color: #000000;
+    border-radius: 10px;
   }
