@@ -1,9 +1,10 @@
 .todo-app {
-    font-family: 'Arial', sans-serif;
-    padding: 20px;
-    background-color: #f7f5f2;
-    color: #333;
-  }
+  font-family: 'Arial', sans-serif;
+  padding: 20px;
+  background-color: #f7f5f2;
+  color: #333;
+  text-align: center; /* Center-align the title */
+}
   
   .add-task {
     margin-bottom: 20px;
@@ -119,4 +120,53 @@
     background-color: #ebcde7;
     color: #000000;
     border-radius: 10px;
+  }
+
+  .task-details {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .task-detail {
+    flex: 1; /* Equal width for each detail field */
+    margin-right: 10px; /* Adjust margin as needed */
+  }
+
+  /* .app-title {
+    font-size: 36px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 2px; 
+    color: #cc4eb1; 
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  } */
+
+
+  .app-title {
+    font-size: 36px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    animation: changeColor 20s linear infinite;
+  }
+  
+  @keyframes changeColor {
+    0% {
+      color: #f39458; /* Start color */
+    }
+    25% {
+      color: #58b3f3; /* Change to a different color at 25% of the animation */
+    }
+    50% {
+      color: #b358f3; /* Change to another color at 50% of the animation */
+    }
+    75% {
+      color: #f358ad; /* Change to another color at 75% of the animation */
+    }
+    100% {
+      color: #f39458; /* Back to the start color at 100% of the animation */
+    }
   }

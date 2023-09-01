@@ -1,6 +1,6 @@
 <template>
-    <div>
-        <h1>The Ellie Org</h1>
+    <div class="todo-app">
+        <h1 class="app-title">The Ellie Org</h1>
     
     <div class="tab-container">
       <div class="tab" :class="{ active: activeTab === 'tasks' }" @click="handleTabClick('tasks')">Tasks</div>
@@ -11,27 +11,40 @@
       <div class="add-task">
       <label for="newTaskDescription">Description:</label>
       <input id="newTaskDescription" v-model="newTaskDescription" @keyup.enter="addTask" placeholder="Add a new task" />
-      
+    </div>
+
+      <div class="task-details">
+
+    <div class="task-detail">
       <label for="newTaskImportance">Importance:</label>
       <input id="newTaskImportance" type="number" v-model="newTaskImportance" placeholder="Importance (1-5)" min="1" max="5" />
-      
+    </div>
+
+    <div class="task-detail">
       <label for="newTaskUrgency">Urgency:</label>
       <input id="newTaskUrgency" type="number" v-model="newTaskUrgency" placeholder="Urgency (1-5)" min="1" max="5" />
+    </div>
 
+    <div class="task-detail">
       <label for="newTaskEffort">Effort:</label>
       <select v-model="newTaskEffort"> 
         <option v-for="option in fibonacciOptions" :value="option" :key="option">{{ option }}</option>      
       </select>
-      
-      <button @click="addTask">Add Task</button>
+    </div>
+  </div>
+<br>
+    <div class="add-task">
+      <button @click="addTask">Add Task</button>  
     </div>
 
 
       <ul class="task-list">
       <li v-for="(task, index) in filteredTasks" :key="index">
-    <div class="task-item">
+    
+        <div class="task-item">
       <input type="checkbox" v-model="task.completed" @change="markTaskCompleted(index)" />
       <span :class="{ completed: task.completed }">{{ task.description }}</span>
+      
       <div class="task-actions">
         <input type="number" v-model="task.importance" min="1" max="5" @input="updateImportance(index, task.importance)" />
         <input type="number" v-model="task.urgency" min="1" max="5" @input="updateUrgency(index, task.urgency)" />
@@ -40,7 +53,9 @@
       </select>
         <button @click="removeTask(index)">Remove</button>
       </div>
+    
     </div>
+  
   </li>
 </ul>
 
