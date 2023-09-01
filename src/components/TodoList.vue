@@ -18,7 +18,6 @@
         min="1"
         max="5"
       />
-      <label for="newTaskUrgency">Urgency:</label>
       <input
         id="newTaskUrgency"
         type="number"
@@ -27,6 +26,12 @@
         min="1"
         max="5"
       />
+
+      <label for="newTaskEffort">Effort:</label>
+      <select v-model="newTaskEffort"> 
+        <option v-for="option in fibonacciOptions" :value="option" :key="option">{{ option }}</option>      
+      </select>
+      
       <button @click="addTask">Add Task</button>
     </div>
     
@@ -44,6 +49,9 @@
       <div class="task-actions">
         <input type="number" v-model="task.importance" min="1" max="5" @input="updateImportance(index, task.importance)" />
         <input type="number" v-model="task.urgency" min="1" max="5" @input="updateUrgency(index, task.urgency)" />
+        <select v-model="task.effort" @input="updateEffort(index, task.effort)"> 
+          <option v-for="option in fibonacciOptions" :value="option" :key="option">{{ option }}</option>      
+      </select>
         <button @click="removeTask(index)">Remove</button>
       </div>
     </div>
@@ -62,6 +70,9 @@
           <div class="task-actions">
             <input type="number" v-model="task.importance" min="1" max="5" @input="updateImportance(index, task.importance)" />
             <input type="number" v-model="task.urgency" min="1" max="5" @input="updateUrgency(index, task.urgency)" />
+            <select v-model="task.effort" @input="updateEffort(index, task.effort)"> 
+          <option v-for="option in fibonacciOptions" :value="option" :key="option">{{ option }}</option>      
+      </select>
             <button @click="removeTask(index)">Remove</button>
           </div>
         </div>
@@ -192,10 +203,12 @@
   export default {
     data() {
       return {
+        fibonacciOptions: [1, 2, 3, 5, 8, 13, 21],
         activeTab: 'tasks',
         newTaskDescription: "",
         newTaskImportance: 1,
         newTaskUrgency: 1,
+        newTaskEffort: 1,
         tasks: [
         {
         description: "Task 1",
@@ -247,19 +260,19 @@
         return [
       {
         title: "Important / Urgent",
-        tasks: this.tasks.filter(task => task.importance >= 4 && task.urgency >= 4),
+        tasks: this.tasks.filter(task => task.importance >= 3 && task.urgency >= 3),
       },
       {
         title: "Important / Not Urgent",
-        tasks: this.tasks.filter(task => task.importance >= 4 && task.urgency < 4),
+        tasks: this.tasks.filter(task => task.importance >= 3 && task.urgency < 3),
       },
       {
         title: "Not Important / Urgent",
-        tasks: this.tasks.filter(task => task.importance < 4 && task.urgency >= 4),
+        tasks: this.tasks.filter(task => task.importance < 3 && task.urgency >= 3),
       },
       {
         title: "Not Important / Not Urgent",
-        tasks: this.tasks.filter(task => task.importance < 4 && task.urgency < 4),
+        tasks: this.tasks.filter(task => task.importance < 3 && task.urgency < 3),
       },
     ];
       },
@@ -287,6 +300,7 @@
             description: this.newTaskDescription,
             importance: parseInt(this.newTaskImportance),
             urgency: parseInt(this.newTaskUrgency),
+            effort: parseInt(this.newTaskEffort),
             completed: false,
             timestamp: new Date().toISOString(),
           });
@@ -294,6 +308,7 @@
           this.newTaskDescription = "";
           this.newTaskImportance = 1;
           this.newTaskUrgency = 1;
+          this.newTaskEffort = 1;
         }
       },
       removeTask(index) {
@@ -325,6 +340,10 @@
     },
     updateUrgency(index, urgency) {
       this.tasks[index].urgency = urgency;
+      this.saveTasks();
+    },
+    updateEffort(index, effort) {
+      this.tasks[index].effort = effort;
       this.saveTasks();
     },
     },
