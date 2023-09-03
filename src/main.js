@@ -6,5 +6,5 @@ createApp(App).mount('#app')
 
 const link = document.createElement('link');
 link.rel = 'manifest';
-link.href = '/manifest.json';
+link.href = '/src/manifest.json';
 document.head.appendChild(link);
